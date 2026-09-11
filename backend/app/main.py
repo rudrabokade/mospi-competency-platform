@@ -20,13 +20,6 @@ async def lifespan(app: FastAPI):
     logger.info("Starting MoSPI AI Competency Platform API...")
     # Create tables if they don't exist (Alembic handles migrations in production)
     async with engine.begin() as conn:
-        # pgvector and uuid extensions if using PostgreSQL
-        if "postgres" in str(engine.url):
-            try:
-                await conn.execute(__import__("sqlalchemy").text("CREATE EXTENSION IF NOT EXISTS vector"))
-                await conn.execute(__import__("sqlalchemy").text('CREATE EXTENSION IF NOT EXISTS "uuid-ossp"'))
-            except Exception as e:
-                logger.warning("Could not create postgres extensions: %s", e)
         await conn.run_sync(Base.metadata.create_all)
     logger.info("Database ready.")
     yield
