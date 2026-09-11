@@ -6,10 +6,12 @@ import { listOfficers } from "@/lib/api";
 import Navbar from "@/components/Navbar";
 import { useRouter } from "next/navigation";
 import { Users } from "lucide-react";
+import { localizeEntity, useLanguage } from "@/lib/i18n";
 
 export default function AdminOfficersPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
+  const { language } = useLanguage();
   const [officers, setOfficers] = useState<any[]>([]);
   const [fetching, setFetching] = useState(true);
 
@@ -47,10 +49,10 @@ export default function AdminOfficersPage() {
                 <tr><td colSpan={6} className="text-center py-8 text-gray-400">No officers found.</td></tr>
               ) : officers.map((o) => (
                 <tr key={o.id} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
-                  <td className="py-3 pr-4 font-medium text-gray-800">{o.name}</td>
+                  <td className="py-3 pr-4 font-medium text-gray-800">{localizeEntity(o.name, language)}</td>
                   <td className="py-3 pr-4 text-gray-500 text-xs">{o.email}</td>
-                  <td className="py-3 pr-4 text-gray-500">{o.designation}</td>
-                  <td className="py-3 pr-4 text-gray-500 max-w-[180px] truncate">{o.department}</td>
+                  <td className="py-3 pr-4 text-gray-500">{localizeEntity(o.designation, language)}</td>
+                  <td className="py-3 pr-4 text-gray-500 max-w-[180px] truncate">{localizeEntity(o.department, language)}</td>
                   <td className="py-3 pr-4 text-gray-500">{o.experience_years}y</td>
                   <td className="py-3">
                     <span className={`px-2 py-0.5 rounded text-xs font-semibold ${

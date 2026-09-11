@@ -10,6 +10,7 @@ import {
 } from "recharts";
 import { Users, BookOpen, FileText, TrendingUp, BarChart3 } from "lucide-react";
 import clsx from "clsx";
+import { localizeEntity, useLanguage } from "@/lib/i18n";
 
 const DOMAIN_COLORS: Record<string, string> = {
   statistical: "#3b82f6",
@@ -34,6 +35,7 @@ function ScoreCell({ score }: { score: number }) {
 export default function AdminDashboard() {
   const { user, loading } = useAuth();
   const router = useRouter();
+  const { language } = useLanguage();
 
   const [summary, setSummary] = useState<any>(null);
   const [heatmap, setHeatmap] = useState<Record<string, Record<string, number>>>({});
@@ -145,7 +147,7 @@ export default function AdminDashboard() {
                   {departments.map((dept) => (
                     <tr key={dept} className="border-t border-gray-50">
                       <td className="py-2 pr-3 text-gray-700 font-medium truncate max-w-[160px]" title={dept}>
-                        {dept}
+                        {localizeEntity(dept, language)}
                       </td>
                       {domains.map((d) => (
                         <td key={d} className="text-center px-2 py-2">
@@ -178,9 +180,9 @@ export default function AdminDashboard() {
             <tbody>
               {officers.map((o) => (
                 <tr key={o.id} className="border-b border-gray-50 hover:bg-gray-50">
-                  <td className="py-3 pr-4 font-medium text-gray-800">{o.name}</td>
-                  <td className="py-3 pr-4 text-gray-500">{o.designation}</td>
-                  <td className="py-3 pr-4 text-gray-500 max-w-[180px] truncate">{o.department}</td>
+                  <td className="py-3 pr-4 font-medium text-gray-800">{localizeEntity(o.name, language)}</td>
+                  <td className="py-3 pr-4 text-gray-500">{localizeEntity(o.designation, language)}</td>
+                  <td className="py-3 pr-4 text-gray-500 max-w-[180px] truncate">{localizeEntity(o.department, language)}</td>
                   <td className="py-3 pr-4 text-gray-500">{o.experience_years}y</td>
                   <td className="py-3">
                     <ScoreCell score={o.avg_score} />

@@ -12,6 +12,7 @@ import {
 import { useRouter } from "next/navigation";
 import { BookOpen, RefreshCw, ExternalLink, Clock, ChevronRight, TrendingUp, Award, Target } from "lucide-react";
 import clsx from "clsx";
+import { localizeEntity, useLanguage } from "@/lib/i18n";
 
 const DOMAIN_COLORS: Record<string, string> = {
   statistical: "#3b82f6",
@@ -20,15 +21,9 @@ const DOMAIN_COLORS: Record<string, string> = {
   behavioural: "#8b5cf6",
 };
 
-const DOMAIN_LABELS: Record<string, string> = {
-  statistical: "Statistical",
-  technical: "Technical",
-  digital_governance: "Digital Gov.",
-  behavioural: "Behavioural",
-};
-
 export default function DashboardPage() {
   const { user, loading } = useAuth();
+  const { t, language } = useLanguage();
   const router = useRouter();
   const [profile, setProfile] = useState<any>(null);
   const [gaps, setGaps] = useState<any[]>([]);
@@ -71,8 +66,11 @@ export default function DashboardPage() {
     setRecommendations((prev) => prev.map((r) => (r.id === recId ? { ...r, status: "enrolled" } : r)));
   };
 
+  const domainLabels: Record<string, string> = {
+    statistical: t("statistical"), technical: t("technical"), digital_governance: t("digitalGov"), behavioural: t("behavioural"),
+  };
   // Aggregate domain scores for radar chart
-  const domainScores = Object.entries(DOMAIN_LABELS).map(([domain, label]) => {
+  const domainScores = Object.entries(domainLabels).map(([domain, label]) => {
     const domainGaps = gaps.filter((g) => g.domain === domain);
     const avg = domainGaps.length
       ? domainGaps.reduce((s, g) => s + g.current_score, 0) / domainGaps.length
@@ -91,7 +89,7 @@ export default function DashboardPage() {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="w-10 h-10 border-4 border-primary-500 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-          <p className="text-gray-500 text-sm">Loading your dashboard...</p>
+          <p className="text-gray-500 text-sm">{t("loadingDashboard")}</p>
         </div>
       </div>
     );
@@ -105,20 +103,20 @@ export default function DashboardPage() {
         {/* Welcome header */}
         <div className="card flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-gray-800">Welcome, {user?.name}</h1>
+            <h1 className="text-2xl font-bold text-gray-800">{t("welcome")}, {localizeEntity(user?.name, language)}</h1>
             <p className="text-gray-500 text-sm mt-1">
-              {user?.designation} · {user?.department} · {user?.experience_years} years experience
+              {localizeEntity(user?.designation, language)} · {localizeEntity(user?.department, language)} · {user?.experience_years} {t("yearsExperience")}
             </p>
           </div>
           <div className="flex gap-3">
             {["statistical", "technical", "digital_governance", "behavioural"].map((domain) => {
-              const d = domainScores.find((x) => x.domain === DOMAIN_LABELS[domain]);
+              const d = domainScores.find((x) => x.domain === domainLabels[domain]);
               return (
                 <div key={domain} className="text-center">
                   <div className="text-xl font-bold" style={{ color: DOMAIN_COLORS[domain] }}>
                     {d?.current ?? 0}
                   </div>
-                  <div className="text-xs text-gray-400 leading-tight">{DOMAIN_LABELS[domain]}</div>
+                  <div className="text-xs text-gray-400 leading-tight">{domainLabels[domain]}</div>
                 </div>
               );
             })}
@@ -130,7 +128,7 @@ export default function DashboardPage() {
           {/* Radar chart */}
           <div className="card">
             <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-              <Target className="w-5 h-5 text-primary-500" /> Domain Competency
+              <Target className="w-5 h-5 text-primary-500" /> {t("domainCompetency")}
             </h2>
             <ResponsiveContainer width="100%" height={280}>
               <RadarChart data={domainScores}>
@@ -147,7 +145,7 @@ export default function DashboardPage() {
           {/* Bar chart top gaps */}
           <div className="card">
             <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-              <TrendingUp className="w-5 h-5 text-red-500" /> Top 10 Skill Gaps
+              <TrendingUp className="w-5 h-5 text-red-500" /> {t("topSkillGaps")}
             </h2>
             <ResponsiveContainer width="100%" height={280}>
               <BarChart data={topGaps} layout="vertical" margin={{ left: 80, right: 10 }}>
@@ -165,8 +163,8 @@ export default function DashboardPage() {
         <div className="card">
           <div className="flex items-center gap-4 border-b border-gray-100 mb-6 -mt-2">
             {[
-              { key: "gaps", label: "Competency Gaps" },
-              { key: "recommendations", label: "Course Recommendations" },
+              { key: "gaps", label: t("competencyGaps") },
+              { key: "recommendations", label: t("courseRecommendations") },
             ].map(({ key, label }) => (
               <button
                 key={key}
@@ -188,7 +186,7 @@ export default function DashboardPage() {
                 className="ml-auto flex items-center gap-1.5 text-xs text-primary-600 hover:text-primary-800 font-medium"
               >
                 <RefreshCw className={clsx("w-3.5 h-3.5", refreshing && "animate-spin")} />
-                Refresh
+                {t("refresh")}
               </button>
             )}
           </div>
@@ -202,7 +200,7 @@ export default function DashboardPage() {
                     className="w-20 text-xs font-medium"
                     style={{ color: DOMAIN_COLORS[gap.domain] }}
                   >
-                    {DOMAIN_LABELS[gap.domain]}
+                    {domainLabels[gap.domain]}
                   </span>
                   <div className="flex-1 relative h-2 bg-gray-100 rounded-full overflow-hidden">
                     <div
@@ -256,12 +254,12 @@ export default function DashboardPage() {
                           onClick={() => handleEnroll(rec.id)}
                           className="flex-1 text-xs btn-primary py-1.5"
                         >
-                          Enroll
+                          {t("enroll")}
                         </button>
                       )}
                       {rec.status === "enrolled" && (
                         <span className="flex-1 text-xs text-center text-green-700 bg-green-50 rounded-lg py-1.5 font-medium">
-                          Enrolled
+                          {t("enrolled")}
                         </span>
                       )}
                       {rec.source_url && (
@@ -285,10 +283,10 @@ export default function DashboardPage() {
         {/* Quick actions */}
         <div className="card">
           <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-            <BookOpen className="w-5 h-5 text-primary-500" /> Available Quizzes
+            <BookOpen className="w-5 h-5 text-primary-500" /> {t("availableQuizzes")}
           </h2>
           <a href="/dashboard/quizzes" className="flex items-center gap-2 text-primary-600 hover:text-primary-800 text-sm font-medium">
-            View all quizzes <ChevronRight className="w-4 h-4" />
+            {t("viewAllQuizzes")} <ChevronRight className="w-4 h-4" />
           </a>
         </div>
       </div>
