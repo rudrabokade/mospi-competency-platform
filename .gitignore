@@ -71,3 +71,15 @@ venv/
 
 # Vercel
 .vercel/
+
+# Uploads & local storage
+backend/uploads/
+uploads/
+*.db
+
+# Local scripts
+*.bat
+start-backend.ps1
+
+# FastAPI
+backend/venv/   
