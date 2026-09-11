@@ -8,7 +8,6 @@ Create Date: 2026-09-11
 from alembic import op
 import sqlalchemy as sa
 from sqlalchemy.dialects.postgresql import JSONB, UUID, ARRAY
-from pgvector.sqlalchemy import Vector
 
 revision = "001"
 down_revision = None
@@ -17,8 +16,6 @@ depends_on = None
 
 
 def upgrade() -> None:
-    # Enable pgvector extension
-    op.execute("CREATE EXTENSION IF NOT EXISTS vector")
     op.execute('CREATE EXTENSION IF NOT EXISTS "uuid-ossp"')
 
     op.create_table(
@@ -61,7 +58,7 @@ def upgrade() -> None:
         sa.Column("title", sa.String(500), nullable=False),
         sa.Column("description", sa.Text),
         sa.Column("skill_tags", ARRAY(sa.String)),
-        sa.Column("embedding", Vector(384)),
+        sa.Column("embedding", JSONB),
         sa.Column("source_url", sa.Text),
         sa.Column("provider", sa.String(100), server_default="iGOT"),
         sa.Column("duration_hours", sa.Float),

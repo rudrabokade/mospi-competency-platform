@@ -8,9 +8,12 @@ from app.models._models import (
     Quiz,
     QuizQuestion,
     QuizAttempt,
+    RewardPolicy,
+    RewardTransaction,
 )
 
 __all__ = [
     "User", "Skill", "CompetencyScore", "Course",
-    "Recommendation", "Material", "Quiz", "QuizQuestion", "QuizAttempt"
+    "Recommendation", "Material", "Quiz", "QuizQuestion", "QuizAttempt",
+    "RewardPolicy", "RewardTransaction"
 ]

@@ -143,3 +143,31 @@ class QuizAttempt(Base):
 
     user: Mapped["User"] = relationship(back_populates="quiz_attempts")
     quiz: Mapped["Quiz"] = relationship(back_populates="attempts")
+
+
+class RewardPolicy(Base):
+    __tablename__ = "reward_policies"
+
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+    organization_name: Mapped[str] = mapped_column(String(255), default="MoSPI")
+    points_per_quiz: Mapped[int] = mapped_column(Integer, default=25)
+    points_per_course: Mapped[int] = mapped_column(Integer, default=50)
+    points_per_assessment: Mapped[int] = mapped_column(Integer, default=10)
+    points_per_evidence: Mapped[int] = mapped_column(Integer, default=15)
+    redemption_threshold: Mapped[int] = mapped_column(Integer, default=500)
+    conversion_type: Mapped[str] = mapped_column(String(50), default="certificate")
+    enabled: Mapped[bool] = mapped_column(Boolean, default=True)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, onupdate=utcnow)
+
+
+class RewardTransaction(Base):
+    __tablename__ = "reward_transactions"
+
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+    user_id: Mapped[uuid.UUID] = mapped_column(Uuid, ForeignKey("users.id"), nullable=False)
+    action: Mapped[str] = mapped_column(String(100), nullable=False)
+    points: Mapped[int] = mapped_column(Integer, nullable=False)
+    note: Mapped[str | None] = mapped_column(Text)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+    user: Mapped["User"] = relationship()
