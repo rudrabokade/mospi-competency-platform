@@ -1,0 +1,49 @@
+﻿# ── Dependencies ──────────────────────────────────────────────
+node_modules/
+.pnp
+.pnp.js
+
+# ── Next.js ───────────────────────────────────────────────────
+frontend/.next/
+frontend/out/
+frontend/build/
+
+# ── Python / FastAPI ──────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.class
+*.pyo
+*.pyd
+.Python
+backend/venv/
+backend/.venv/
+venv/
+.venv/
+*.egg-info/
+dist/
+build/
+*.egg
+
+# ── Environment / secrets ─────────────────────────────────────
+.env
+.env.*
+!.env.example
+*.env
+
+# ── OS / editors ──────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.idea/
+.vscode/
+
+# ── Logs ──────────────────────────────────────────────────────
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ── Misc ──────────────────────────────────────────────────────
+.cache/
+*.tsbuildinfo
