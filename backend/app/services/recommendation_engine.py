@@ -1,58 +1,25 @@
 from __future__ import annotations
 
-"""
-Recommendation Engine using sentence-transformers + pgvector cosine similarity.
-"""
+"""Dependency-free course recommendation engine based on keyword overlap."""
 
 import logging
 from datetime import datetime, timezone
 
-import numpy as np
-from sentence_transformers import SentenceTransformer
 from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from app.core.config import get_settings
 from app.models import CompetencyScore, Course, Recommendation, User
 
-settings = get_settings()
 logger = logging.getLogger(__name__)
 
-_model: SentenceTransformer | None = None
-
-
-def get_embedding_model() -> SentenceTransformer:
-    global _model
-    if _model is None:
-        logger.info("Loading sentence-transformer model: %s", settings.embedding_model)
-        _model = SentenceTransformer(settings.embedding_model)
-    return _model
-
-
-def embed_text(text: str) -> list[float]:
-    model = get_embedding_model()
-    vec = model.encode(text, normalize_embeddings=True)
-    return vec.tolist()
-
-
 async def ensure_course_embeddings(db: AsyncSession) -> None:
-    """Compute and store embeddings for courses that don't have them yet."""
-    result = await db.execute(select(Course).where(Course.embedding.is_(None)))
-    courses = result.scalars().all()
-    if not courses:
-        return
+    """Retained as a compatibility no-op for callers of the old engine."""
+    return None
 
-    logger.info("Embedding %d courses...", len(courses))
-    model = get_embedding_model()
-    texts = [f"{c.title}. {c.description or ''}" for c in courses]
-    embeddings = model.encode(texts, normalize_embeddings=True, batch_size=32)
 
-    for course, emb in zip(courses, embeddings):
-        course.embedding = emb.tolist()
-
-    await db.flush()
-    logger.info("Course embeddings stored.")
+def _keywords(text: str) -> set[str]:
+    return {word for word in text.lower().replace("-", " ").split() if len(word) > 2}
 
 
 async def generate_recommendations(
@@ -83,30 +50,18 @@ async def generate_recommendations(
 
     gap_skills.sort(reverse=True)
     # Build a combined query text from top-5 gap skills
-    query_text = ". ".join(
-        f"Need to improve {name}: {desc}" for _, name, desc in gap_skills[:5]
-    )
+    query_words = _keywords(" ".join(f"{name} {desc}" for _, name, desc in gap_skills[:5]))
 
-    # Ensure course embeddings exist
-    await ensure_course_embeddings(db)
-
-    # Fetch all courses
-    courses_result = await db.execute(select(Course).where(Course.embedding.isnot(None)))
+    courses_result = await db.execute(select(Course))
     courses = courses_result.scalars().all()
     if not courses:
         return 0
 
-    # Embed the query
-    model = get_embedding_model()
-    query_vec = model.encode(query_text, normalize_embeddings=True)
-
-    # Cosine similarity (embeddings are already normalized)
     scored = []
     for course in courses:
-        if not course.embedding:
-            continue
-        course_vec = np.array(course.embedding)
-        sim = float(np.dot(query_vec, course_vec))
+        course_words = _keywords(f"{course.title} {course.description or ''}")
+        overlap = len(query_words & course_words)
+        sim = overlap / max(len(query_words), 1)
         scored.append((sim, course))
 
     scored.sort(key=lambda x: x[0], reverse=True)
