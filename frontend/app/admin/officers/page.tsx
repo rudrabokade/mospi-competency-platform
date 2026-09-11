@@ -15,6 +15,7 @@ import {
   Users, Plus, Search, Filter, Download, X, Briefcase, Award, CheckCircle2, AlertCircle, Check
 } from "lucide-react";
 import clsx from "clsx";
+import { localizeEntity, useLanguage } from "@/lib/i18n";
 
 const DOMAIN_COLORS: Record<string, string> = {
   statistical: "#2C5EBF",
@@ -33,7 +34,7 @@ const DOMAIN_LABELS: Record<string, string> = {
 export default function AdminOfficersPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
-
+  const { language } = useLanguage();
   const [officers, setOfficers] = useState<any[]>([]);
   const [fetching, setFetching] = useState(true);
   const [search, setSearch] = useState("");
@@ -296,10 +297,10 @@ export default function AdminOfficersPage() {
               ) : (
                 filtered.map((o) => (
                   <tr key={o.id} className="ledgerRow">
-                    <td className="ledgerName">{o.name}</td>
+                    <td className="ledgerName">{localizeEntity(o.name, language)}</td>
                     <td className="ledgerSub ledgerMono">{o.email}</td>
-                    <td className="ledgerSub">{o.designation}</td>
-                    <td className="ledgerSub ledgerTruncate" title={o.department}>{o.department}</td>
+                    <td className="ledgerSub">{localizeEntity(o.designation, language)}</td>
+                    <td className="ledgerSub ledgerTruncate" title={o.department}>{localizeEntity(o.department, language)}</td>
                     <td className="ledgerSub">{o.experience_years}y</td>
                     <td>
                       <span

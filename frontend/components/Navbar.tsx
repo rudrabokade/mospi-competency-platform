@@ -17,25 +17,27 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
 import { useState, useEffect } from "react";
+import { localizeEntity, useLanguage } from "@/lib/i18n";
 
 export default function Navbar() {
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const path = usePathname();
   const [mounted, setMounted] = useState(false);
+  const { language, setLanguage, t } = useLanguage();
 
   useEffect(() => setMounted(true), []);
 
   const navItems =
     user?.role === "admin"
       ? [
-          { href: "/admin", label: "Dashboard", icon: BarChart3 },
-          { href: "/admin/officers", label: "Officers", icon: User },
-          { href: "/admin/materials", label: "Materials & Quizzes", icon: BookOpen },
+          { href: "/admin", label: t("dashboard"), icon: BarChart3 },
+          { href: "/admin/officers", label: t("officers"), icon: User },
+          { href: "/admin/materials", label: t("materials"), icon: BookOpen },
         ]
       : [
-          { href: "/dashboard", label: "Dashboard", icon: Home },
-          { href: "/dashboard/quizzes", label: "Quizzes", icon: BookOpen },
+          { href: "/dashboard", label: t("dashboard"), icon: Home },
+          { href: "/dashboard/quizzes", label: t("quizzes"), icon: BookOpen },
         ];
 
   return (
@@ -48,9 +50,7 @@ export default function Navbar() {
           <div className="w-8 h-8 bg-saffron rounded-lg flex items-center justify-center">
             <Brain className="w-5 h-5 text-white" />
           </div>
-          <span className="font-bold text-sm hidden sm:block">
-            MoSPI AI Competency
-          </span>
+          <span className="font-bold text-sm hidden sm:block">MoSPI {t("platform")}</span>
         </Link>
 
         <div className="flex items-center gap-1">
@@ -75,12 +75,24 @@ export default function Navbar() {
       <div className="flex items-center gap-2">
         {user?.role === "admin" && (
           <span className="flex items-center gap-1 text-xs bg-saffron/20 text-saffron px-2.5 py-1 rounded-full font-medium">
-            <Shield className="w-3 h-3" /> Admin
+            <Shield className="w-3 h-3" /> {t("admin")}
           </span>
         )}
+        <label className="hidden sm:flex items-center gap-1 text-primary-200 text-xs" title={t("language")}>
+          <span aria-hidden="true">A/अ</span>
+          <select
+            value={language}
+            onChange={(event) => setLanguage(event.target.value as "en" | "hi")}
+            className="bg-transparent text-primary-100 outline-none cursor-pointer"
+            aria-label={t("language")}
+          >
+            <option value="en" className="text-gray-900">EN</option>
+            <option value="hi" className="text-gray-900">हि</option>
+          </select>
+        </label>
         <div className="flex items-center gap-2 text-sm text-primary-200">
           <User className="w-4 h-4" />
-          <span className="hidden sm:block">{user?.name}</span>
+          <span className="hidden sm:block">{localizeEntity(user?.name, language)}</span>
         </div>
 
         {mounted && (
@@ -106,7 +118,7 @@ export default function Navbar() {
           className="flex items-center gap-1.5 text-primary-300 hover:text-white text-sm transition-colors p-2 rounded-lg hover:bg-white/10"
         >
           <LogOut className="w-4 h-4" />
-          <span className="hidden sm:block">Logout</span>
+          <span className="hidden sm:block">{t("logout")}</span>
         </button>
       </div>
     </nav>

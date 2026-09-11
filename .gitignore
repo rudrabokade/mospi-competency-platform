@@ -13,6 +13,7 @@ build/
 **/dist/
 **/build/
 
+
 # Environment variables
 .env
 .env.local
@@ -71,7 +72,6 @@ venv/
 
 # Vercel
 .vercel/
-
 # Uploads & local storage
 backend/uploads/
 uploads/
@@ -82,4 +82,5 @@ uploads/
 start-backend.ps1
 
 # FastAPI
-backend/venv/   
+backend/venv/
+

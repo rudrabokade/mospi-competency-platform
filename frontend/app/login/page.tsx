@@ -3,16 +3,11 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/lib/auth";
 import { Shield, TrendingUp, BookOpen, Brain, Lock, Mail, ArrowRight, Landmark } from "lucide-react";
-
-const CAPABILITIES = [
-  { icon: TrendingUp, title: "Competency Gap Analysis", desc: "AI-powered skill profiling across 4 domains" },
-  { icon: BookOpen, title: "Personalized Recommendations", desc: "Semantic course matching via iGOT catalog" },
-  { icon: Brain, title: "AI-Generated Quizzes", desc: "LLM-based MCQ generation from training materials" },
-  { icon: Shield, title: "Admin Analytics", desc: "Org-wide gap heatmap and predictive insights" },
-];
+import { useLanguage } from "@/lib/i18n";
 
 export default function LoginPage() {
   const { login } = useAuth();
+  const { language, setLanguage, t } = useLanguage();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -24,6 +19,12 @@ export default function LoginPage() {
   // Render a blank shell on the server so Chrome extensions injecting SVGs
   // into form fields never cause a hydration mismatch.
   if (!mounted) return <div style={{ minHeight: "100vh", background: "#101B33" }} />;
+  const capabilities = [
+    { icon: TrendingUp, title: t("competencyGapAnalysis"), desc: t("gapAnalysisDesc") },
+    { icon: BookOpen, title: t("personalisedRecommendations"), desc: t("recommendationsDesc") },
+    { icon: Brain, title: t("aiQuizzes"), desc: t("quizDesc") },
+    { icon: Shield, title: t("adminAnalytics"), desc: t("analyticsDesc") },
+  ];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,6 +55,10 @@ export default function LoginPage() {
       style={{ background: "#101B33" }}
       suppressHydrationWarning
     >
+      <div className="absolute top-5 right-5 flex gap-1 p-1 text-xs" style={{ border: "1px solid rgba(169,130,74,0.45)", background: "#0C1830" }}>
+        <button onClick={() => setLanguage("en")} className="px-2 py-1" style={{ color: language === "en" ? "#F6F4EE" : "#8C93A6", background: language === "en" ? "rgba(169,130,74,0.22)" : "transparent" }}>EN</button>
+        <button onClick={() => setLanguage("hi")} className="px-2 py-1" style={{ color: language === "hi" ? "#F6F4EE" : "#8C93A6", background: language === "hi" ? "rgba(169,130,74,0.22)" : "transparent" }}>हिन्दी</button>
+      </div>
       <div
         className="font-sans-doc w-full max-w-6xl grid grid-cols-1 lg:grid-cols-[1.05fr_0.95fr] rise-in"
         style={{
@@ -78,7 +83,7 @@ export default function LoginPage() {
               </div>
               <div>
                 <p className="text-xs tracking-wide" style={{ color: "#8C93A6" }}>
-                  Government of India
+                  {t("government")}
                 </p>
                 <p className="text-sm font-medium text-white">
                   Ministry of Statistics & Programme Implementation
@@ -88,7 +93,7 @@ export default function LoginPage() {
 
             <div style={{ borderTop: "1px solid rgba(169,130,74,0.35)", paddingTop: "1.75rem" }}>
               <h1 className="font-serif-doc text-white leading-[1.1]" style={{ fontSize: "2.5rem" }}>
-                AI Competency Platform
+                {t("platform")}
               </h1>
               <p className="mt-5 text-base leading-relaxed max-w-md" style={{ color: "#B7BECF" }}>
                 Empowering MoSPI officers with AI-driven skill gap analysis, personalized learning
@@ -101,7 +106,7 @@ export default function LoginPage() {
               style={{ borderTop: "1px solid rgba(169,130,74,0.2)" }}
               suppressHydrationWarning
             >
-              {CAPABILITIES.map(({ icon: Icon, title, desc }) => (
+              {capabilities.map(({ icon: Icon, title, desc }) => (
                 <div
                   key={title}
                   className="flex items-start gap-4 py-4"
@@ -134,13 +139,13 @@ export default function LoginPage() {
         {/* Right — Login Form */}
         <div className="p-9 md:p-14 flex flex-col justify-center" style={{ background: "#F6F4EE" }} suppressHydrationWarning>
           <p className="font-serif-doc italic" style={{ color: "#C6661E", fontSize: "0.95rem" }}>
-            Officer Sign In
+            {t("officerSignIn")}
           </p>
           <h2 className="font-serif-doc text-2xl mt-1" style={{ color: "#101B33" }}>
-            Welcome back
+            {t("welcomeBack")}
           </h2>
           <p className="text-sm mt-2 mb-8" style={{ color: "#6B7280" }}>
-            Sign in to your MoSPI learning dashboard
+            {t("loginPrompt")}
           </p>
 
           {error && (
@@ -166,7 +171,7 @@ export default function LoginPage() {
                 <span className="w-3.5 h-3.5 inline-flex" suppressHydrationWarning>
                   <Mail className="w-3.5 h-3.5" />
                 </span>
-                Email
+                {t("email")}
               </label>
               <input
                 type="email"
@@ -192,7 +197,7 @@ export default function LoginPage() {
                 <span className="w-3.5 h-3.5 inline-flex" suppressHydrationWarning>
                   <Lock className="w-3.5 h-3.5" />
                 </span>
-                Password
+                {t("password")}
               </label>
               <input
                 type="password"
@@ -222,11 +227,11 @@ export default function LoginPage() {
                     className="w-4 h-4 rounded-full animate-spin"
                     style={{ border: "2px solid rgba(246,244,238,0.3)", borderTopColor: "#F6F4EE" }}
                   />
-                  Signing in...
+                  {t("signingIn")}
                 </>
               ) : (
                 <>
-                  <span>Sign in</span>
+                  <span>{t("signIn")}</span>
                   <span className="w-4 h-4 inline-flex" suppressHydrationWarning>
                     <ArrowRight className="w-4 h-4" />
                   </span>
@@ -237,7 +242,7 @@ export default function LoginPage() {
 
           <div className="mt-10 pt-6" style={{ borderTop: "1px solid #DDD7C8" }}>
             <p className="text-xs mb-4" style={{ color: "#6B7280" }}>
-              Demo accounts
+              {t("demoAccounts")}
             </p>
             <div className="grid grid-cols-2 gap-3">
               <button
@@ -246,10 +251,10 @@ export default function LoginPage() {
                 style={{ borderLeft: "2px solid #2F6F52", background: "rgba(47,111,82,0.06)" }}
               >
                 <span className="block text-sm font-medium" style={{ color: "#2F6F52" }}>
-                  Officer Demo
+                  {t("officerDemo")}
                 </span>
                 <span className="text-xs" style={{ color: "#6B7280" }}>
-                  Learner role
+                  {t("learnerRole")}
                 </span>
               </button>
               <button
@@ -258,10 +263,10 @@ export default function LoginPage() {
                 style={{ borderLeft: "2px solid #C6661E", background: "rgba(198,102,30,0.06)" }}
               >
                 <span className="block text-sm font-medium" style={{ color: "#C6661E" }}>
-                  Admin Demo
+                  {t("adminDemo")}
                 </span>
                 <span className="text-xs" style={{ color: "#6B7280" }}>
-                  Admin role
+                  {t("adminRole")}
                 </span>
               </button>
             </div>

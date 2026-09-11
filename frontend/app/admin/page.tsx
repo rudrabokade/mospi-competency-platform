@@ -39,6 +39,7 @@ import {
   Database, Sparkles, Check, AlertCircle, HelpCircle, Briefcase, GraduationCap
 } from "lucide-react";
 import clsx from "clsx";
+import { localizeEntity, useLanguage } from "@/lib/i18n";
 
 // ---------------------------------------------------------------------------
 // Design tokens — "statistical ledger": deep navy, warm ledger paper, brass accent
@@ -91,6 +92,7 @@ function AdminDashboardContent() {
   const { user, loading } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { language } = useLanguage();
 
   const [activeTab, setActiveTab] = useState<TabKey>("overview");
   const [summary, setSummary] = useState<any>(null);
