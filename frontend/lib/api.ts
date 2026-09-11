@@ -56,6 +56,11 @@ export const getMe = () => api.get("/api/auth/me");
 // ─── Profile & Competency ────────────────────────────────────
 export const getProfile = (userId: string) => api.get(`/api/users/${userId}/profile`);
 export const getCompetencyGaps = (userId: string) => api.get(`/api/users/${userId}/competency-gaps`);
+export const updateCompetencyScores = (userId: string, updates: { skill_id: string; score: number; source: string }[]) =>
+  api.post(`/api/users/${userId}/competency-scores`, updates);
+export const getRewards = (userId: string) => api.get(`/api/users/${userId}/rewards`);
+export const earnRewardPoints = (userId: string, action: string, note?: string) =>
+  api.post(`/api/users/${userId}/rewards/earn`, { action, note });
 
 // ─── Recommendations ─────────────────────────────────────────
 export const getRecommendations = (userId: string) => api.get(`/api/users/${userId}/recommendations`);
@@ -77,4 +82,35 @@ export const attemptQuiz = (quizId: string, answers: Record<string, string>) =>
 export const getAdminSummary = () => api.get("/api/admin/dashboard-summary");
 export const getOrgHeatmap = () => api.get("/api/admin/org-gap-heatmap");
 export const listOfficers = () => api.get("/api/admin/officers");
+export const createOfficer = (data: {
+  name: string;
+  email: string;
+  password?: string;
+  designation: string;
+  department: string;
+  experience_years: number;
+  qualifications?: string[];
+}) => api.post("/api/admin/officers", data);
+export const getOfficerDetail = (userId: string) => api.get(`/api/admin/officers/${userId}/detail`);
+export const awardOfficerReward = (userId: string, points: number, note: string) =>
+  api.post(`/api/admin/officers/${userId}/reward`, { points, note });
+
+export const getSkillsBreakdown = () => api.get("/api/admin/skills-breakdown");
+export const getRecentActivity = () => api.get("/api/admin/recent-activity");
 export const listMaterials = () => api.get("/api/admin/materials");
+export const deleteMaterial = (materialId: string) => api.delete(`/api/admin/materials/${materialId}`);
+
+export const listAdminQuizzes = () => api.get("/api/admin/quizzes");
+export const getAdminQuizDetail = (quizId: string) => api.get(`/api/admin/quizzes/${quizId}`);
+export const deleteQuiz = (quizId: string) => api.delete(`/api/admin/quizzes/${quizId}`);
+
+export const syncIgotCourses = () => api.post("/api/admin/igot/sync");
+export const getIgotCourses = () => api.get("/api/admin/igot/courses");
+export const recomputeAllRecommendations = () => api.post("/api/admin/recommendations/recompute-all");
+
+export const getRewardPolicy = () => api.get("/api/admin/reward-policy");
+export const updateRewardPolicy = (policy: Record<string, unknown>) => api.put("/api/admin/reward-policy", policy);
+export const getAdminRewardTransactions = () => api.get("/api/admin/rewards/transactions");
+export const getLearningAnalytics = () => api.get("/api/admin/learning-analytics");
+export const exportOfficers = () => api.get("/api/admin/officers/export", { responseType: "blob" });
+
